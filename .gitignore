@@ -1,0 +1,8 @@
+bin/
+lib/*
+!lib/READMELib
+*.xls
+*.xlsx
+.classpath
+.project
+.settings
