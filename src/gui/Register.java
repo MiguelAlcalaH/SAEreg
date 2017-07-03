@@ -10,6 +10,10 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
@@ -20,6 +24,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -41,6 +46,8 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import util.Util;
 
 
 public class Register extends JFrame {
@@ -166,6 +173,7 @@ public class Register extends JFrame {
 		repTab.add(apellidos,getConstraints(1, 2, 3, 1));
 		
 		fecha_nac = new JSpinner(new SpinnerDateModel());
+		fecha_nac.setEditor(new JSpinner.DateEditor(fecha_nac,"dd-MM-yyyy"));
 		repTab.add(new JLabel("<html><b>Fecha de Nacimiento:</b></html>"),getConstraints(0, 3, 1, 1));
 		repTab.add(fecha_nac,getConstraints(1, 3, 1, 1));
 		
@@ -360,7 +368,7 @@ public class Register extends JFrame {
 		estTab.add(estatura,getConstraints(1, 7, 1, 1));
 		
 		peso = new JSpinner(new SpinnerNumberModel(50.0, 0.0, 200.0, 0.01));
-		peso.add(new JLabel("<html><b>Peso</b>:</html>"),getConstraints(2, 7, 1, 1));
+		estTab.add(new JLabel("<html><b>Peso</b>:</html>"),getConstraints(2, 7, 1, 1));
 		estTab.add(peso,getConstraints(3, 7, 1, 1));
 		
 		tallaCamisa = new JSpinner(new SpinnerNumberModel(10, 5, 30, 1));
@@ -405,38 +413,73 @@ public class Register extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel 2007 (*.xls)","xls");
-				chooser.addChoosableFileFilter(filter);
-				chooser.addChoosableFileFilter(new FileNameExtensionFilter("Excel 2010 (*.xlsx)","xlsx"));
-				int op = chooser.showSaveDialog(null);
-				if(op == JFileChooser.APPROVE_OPTION)
-				{
-					result = chooser.getSelectedFile().getAbsolutePath();
-					String fil = chooser.getFileFilter().getDescription();
-					if(fil.equals("Excel 2007 (*.xls)"))
-					{
-						result = result + ".xls";
-						generateExcel(0);
-					}
-					else
-					{
-						result = result + ".xlsx";
-						generateExcel(1);
-					}
+				try {
+					Statement st = Util.getConection().createStatement();
+					String query = "INSERT INTO sae_reg VALUES(" + getAsString() + ");";
+					System.out.println(query);
+					st.execute(query);
+					Util.getConection().commit();
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
 				}
+				
+				JOptionPane.showMessageDialog(null, "Registro agregado", "crear registro", JOptionPane.INFORMATION_MESSAGE);
+				clearAllData();
+				
 			}
 		});
 	}
 	
 	
-	@SuppressWarnings("deprecation")
+	public String getAsString()
+	{
+	    String cedula = getStringFormat(ciEstu.getText());
+	    String nac = getStringFormat("V");
+	    String cod_escolar = getStringFormat("-");
+	    String apellidos = getStringFormat(apellidoEst.getText());
+	    String nombres = getStringFormat(nombreEst.getText());
+	    String grado = (String)nivel.getSelectedItem();
+	    String seccion = getStringFormat(this.seccion.getText());
+	    String sexo = f.isSelected() ? "F" : "M";
+	    sexo = getStringFormat(sexo);
+	    SimpleDateFormat fo = new SimpleDateFormat("yyyy-MM-dd");
+	    String fecha_nac = getStringFormat((fo.format((Date)this.fecha_nac.getValue())));
+	    String lugar_nac = getStringFormat(this.pais_nac.getText());
+	    String estado_nac = getStringFormat(this.estado_nac.getText());
+	    String ef = "\'n\'";
+	    String cedula_rep = getStringFormat(this.cedula.getText());
+	    String apellido_rep  = getStringFormat(this.apellidos.getText());
+	    String nombre_rep = getStringFormat(this.nombres.getText());
+	    String parentezco = getStringFormat(this.parentezco.getText());
+	    String direccion = getStringFormat(dir.getText());
+	    String tlfn = (String)codTelfn.getSelectedItem()+"-"+telefono.getText();
+	    tlfn = getStringFormat(tlfn);
+	    String celular = (String)codCelular.getSelectedItem()+"-"+this.celular.getText();
+	    celular = getStringFormat(celular);
+	    String email = getStringFormat(this.correo.getText());
+	    
+	    return cedula+","+nac+","+cod_escolar+","+apellidos+","+nombres+","+grado+","+seccion+","+
+	    		sexo+","+fecha_nac+","+lugar_nac+","+estado_nac+","+ef+","+cedula_rep+","+
+	    		apellido_rep+","+nombre_rep+","+parentezco+","+direccion+","+tlfn+","+
+	    		celular+","+email;
+	}
+	
+	static public String getStringFormat(String str)
+	{
+		return "\'"+str+"\'";
+	}
+	
 	private void clearAllData()
 	{
 		cedula.setText("");
 		nombres.setText("");
 		apellidos.setText("");
-		fecha_nac.getModel().setValue(new Date(1970,1,1));
+		try {
+			fecha_nac.getModel().setValue((Date)(new SimpleDateFormat("YYYY-MM-dd")).parseObject("1990-01-01"));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		edo_civil.setSelectedIndex(0);
 		parentezco.setText("");
 		nacionalidad.setText("");
@@ -474,20 +517,9 @@ public class Register extends JFrame {
 		peso.setValue(new Double(50.0));
 	}
 	
-	@SuppressWarnings("deprecation")
-	private void generateExcel(int type)
-	{
-		setCursor(Cursor.WAIT_CURSOR);
-		if(type == 0)
-			generateXLS();
-		else
-			generateXLXS();
-
-		setCursor(Cursor.DEFAULT_CURSOR);
-	}
 	
 	
-	private void generateXLXS()
+	public void generateXLXS()
 	{
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet("Registro de Estudiantes");
@@ -539,7 +571,7 @@ public class Register extends JFrame {
 	}
 	
 	
-	private void generateXLS()
+	public void generateXLS()
 	{
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Registro de Estudiantes") ;
