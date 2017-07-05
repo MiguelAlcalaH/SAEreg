@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -11,13 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -71,9 +68,13 @@ public class MainSAE extends JFrame{
 		root.add(header,Register.getConstraints(0, 0, 2, 1));
 		
 		create = new JButton("Nuevo Registro",new ImageIcon("Resources/add.png"));
+		create.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 		update = new JButton("Actualizar Registro",new ImageIcon("Resources/update.png"));
+		update.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 		delete = new JButton("Borrar Registro",new ImageIcon("Resources/delete.png"));
+		delete.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
 		generate = new JButton("Exportar a Excel",new ImageIcon("Resources/table.png"));
+		generate.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 		
 		actions();
 		
@@ -104,6 +105,8 @@ public class MainSAE extends JFrame{
 		
 		pack();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		setLocation((dim.width-getWidth())/2, (dim.height-getHeight())/2);
 		setVisible(true);
 	}
 	
@@ -118,7 +121,7 @@ public class MainSAE extends JFrame{
 					
 					@Override
 					public void run() {
-						new Register("Nuevo Registro");
+						new Register("Nuevo Registro",false);
 					}
 				});
 			}
@@ -134,6 +137,23 @@ public class MainSAE extends JFrame{
 			}
 		});
 		
+		
+		update.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String nr = JOptionPane.showInputDialog("Ingrese Numero de cedula: ");
+				Object [][]obj = Register.getAsObject(Integer.parseInt(nr));
+				if(obj != null)
+				{
+					Register up = new Register("Actualizar registro", true);
+					up.loadData(obj[0], obj[1]);
+				}
+				else
+					JOptionPane.showMessageDialog(null, "Cedula no encontrada", "cedula", JOptionPane.ERROR_MESSAGE);
+				
+			}
+		});
 	
 	}
 

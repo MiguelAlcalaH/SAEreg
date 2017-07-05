@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -21,7 +21,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -36,8 +35,6 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -127,8 +124,11 @@ public class Register extends JFrame {
 	JButton add;
 	JButton exit;
 	JButton clear;
+	JButton update;
 	
-	public Register(String title)
+	Integer OldCi = 0;
+	
+	public Register(String title, boolean upd)
 	{
 		super(title);
 		tabs = new JTabbedPane();
@@ -145,7 +145,10 @@ public class Register extends JFrame {
 		
 		JPanel buttonPanel = new JPanel(new GridBagLayout());
 		buttonPanel.add(clear,getConstraints(1, 0, 1, 1));
-		buttonPanel.add(add,getConstraints(2, 0, 1, 1));
+		if(!upd)
+			buttonPanel.add(add,getConstraints(2, 0, 1, 1));
+		else
+			buttonPanel.add(update,getConstraints(2, 0, 1, 1));
 		buttonPanel.add(exit,getConstraints(3, 0, 1, 1));
 		
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
@@ -392,6 +395,7 @@ public class Register extends JFrame {
 		add = new JButton("Agregar",new ImageIcon("Resources/dialog-ok.png"));
 		exit = new JButton("Salir",new ImageIcon("Resources/dialog-no.png"));
 		clear = new JButton("Borrar", new ImageIcon("Resources/clear.png"));
+		update = new JButton("Actualizar", new ImageIcon("Resources/dialog-ok.png"));
 		
 		exit.addActionListener(new ActionListener() {
 			
@@ -429,10 +433,87 @@ public class Register extends JFrame {
 				
 			}
 		});
+		
+		update.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Statement st = Util.getConection().createStatement();
+					String query = "UPDATE sae_reg SET " + getUpdateString() + " WHERE cedula="+OldCi.toString()+";";
+					System.out.println(query);
+					st.executeUpdate(query);
+					Util.getConection().commit();
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				
+				JOptionPane.showMessageDialog(null, "Registro actualizado", "Actualizar registro", JOptionPane.INFORMATION_MESSAGE);
+				clearAllData();
+				dispose();
+			}
+		});
 	}
 	
 	
 	public String getAsString()
+	{
+	    String cedula = getStringFormat(ciEstu.getText());
+	    String nac = getStringFormat(nacionalidad.getText());
+	    String cod_escolar = getStringFormat("-");
+	    String apellidos = getStringFormat(apellidoEst.getText());
+	    String nombres = getStringFormat(nombreEst.getText());
+	    String grado = (String)nivel.getSelectedItem();
+	    String seccion = getStringFormat(this.seccion.getText());
+	    String sexo = f.isSelected() ? "F" : "M";
+	    sexo = getStringFormat(sexo);
+	    SimpleDateFormat fo = new SimpleDateFormat("yyyy-MM-dd");
+	    String fecha_nac = getStringFormat((fo.format((Date)this.fecha_nac.getValue())));
+	    String lugar_nac = getStringFormat(this.pais_nac.getText());
+	    String estado_nac = getStringFormat(this.estado_nac.getText());
+	    String ef = "\'n\'";
+	    String cedula_rep = getStringFormat(this.cedula.getText());
+	    String apellido_rep  = getStringFormat(this.apellidos.getText());
+	    String nombre_rep = getStringFormat(this.nombres.getText());
+	    String parentezco = getStringFormat(this.parentezco.getText());
+	    String direccion = getStringFormat(dir.getText());
+	    String tlfn = (String)codTelfn.getSelectedItem()+"-"+telefono.getText();
+	    tlfn = getStringFormat(tlfn);
+	    String celular = (String)codCelular.getSelectedItem()+"-"+this.celular.getText();
+	    celular = getStringFormat(celular);
+	    String email = getStringFormat(this.correo.getText());
+	    
+	    String edo_civil = getStringFormat((String)this.edo_civil.getSelectedItem());
+	    String tipo_vivienda = getStringFormat(tipoVivienda.getText());
+	    String ubicacion = getStringFormat(this.ubicacion.getText());
+	    String condicion_Vivienda = getStringFormat(condicion_vivienda.getText());
+	    String profesion = getStringFormat(this.profesion.getText());
+	    String lugar_trabajo = getStringFormat(this.lugar_trabajo.getText());
+	    String ingreso =  getStringFormat(this.ingreso.getText());
+	    String celular_est = getStringFormat((String)codCelularEst.getSelectedItem()+"-"+celularEst.getText());
+	    String tlfn_est = getStringFormat((String)codTelfnEst.getSelectedItem()+"-"+telefonoEst.getText());
+	    String corre_est = getStringFormat(this.correoEst.getText());
+	    String zurdo = zurdoY.isSelected() ? "\'Y\'" : "\'N\'";
+	    String beca = becaY.isSelected() ?  "\'Y\'" : "\'N\'";
+	    String canaima = canaimaY.isSelected() ?  "\'Y\'" : "\'N\'";
+	    String estatura = ((Double)this.estatura.getValue()).toString();
+	    String peso = ((Double)this.peso.getValue()).toString();
+	    String talla_camisa = tallaCamisa.getValue().toString();
+	    String talla_pantalon = tallaPantalon.getValue().toString();
+	    String talla_zapato = tallaZapato.getValue().toString();
+	    String pais_nac = getStringFormat(this.pais_nac.getText());
+	    
+	    return cedula+","+nac+","+cod_escolar+","+apellidos+","+nombres+","+grado+","+seccion+","+
+	    		sexo+","+fecha_nac+","+lugar_nac+","+estado_nac+","+ef+","+cedula_rep+","+
+	    		apellido_rep+","+nombre_rep+","+parentezco+","+direccion+","+tlfn+","+
+	    		celular+","+email+","+edo_civil+","+tipo_vivienda+","+ubicacion+","+condicion_Vivienda+
+	    		","+profesion+","+lugar_trabajo+","+ingreso+","+celular_est+","+tlfn_est+","+
+	    		corre_est+","+zurdo+","+beca+","+canaima+","+estatura+","+peso+","+talla_camisa+","+talla_pantalon+","+
+	    		talla_zapato+","+pais_nac;
+	}
+	
+	public String getUpdateString()
 	{
 	    String cedula = getStringFormat(ciEstu.getText());
 	    String nac = getStringFormat("V");
@@ -459,10 +540,35 @@ public class Register extends JFrame {
 	    celular = getStringFormat(celular);
 	    String email = getStringFormat(this.correo.getText());
 	    
-	    return cedula+","+nac+","+cod_escolar+","+apellidos+","+nombres+","+grado+","+seccion+","+
-	    		sexo+","+fecha_nac+","+lugar_nac+","+estado_nac+","+ef+","+cedula_rep+","+
-	    		apellido_rep+","+nombre_rep+","+parentezco+","+direccion+","+tlfn+","+
-	    		celular+","+email;
+	    String edo_civil = getStringFormat((String)this.edo_civil.getSelectedItem());
+	    String tipo_vivienda = getStringFormat(tipoVivienda.getText());
+	    String ubicacion = getStringFormat(this.ubicacion.getText());
+	    String condicion_Vivienda = getStringFormat(condicion_vivienda.getText());
+	    String profesion = getStringFormat(this.profesion.getText());
+	    String lugar_trabajo = getStringFormat(this.lugar_trabajo.getText());
+	    String ingreso =  getStringFormat(this.ingreso.getText());
+	    String celular_est = getStringFormat((String)codCelularEst.getSelectedItem()+"-"+celularEst.getText());
+	    String tlfn_est = getStringFormat((String)codTelfnEst.getSelectedItem()+"-"+telefonoEst.getText());
+	    String corre_est = getStringFormat(this.correoEst.getText());
+	    String zurdo = zurdoY.isSelected() ? "\'Y\'" : "\'N\'";
+	    String beca = becaY.isSelected() ?  "\'Y\'" : "\'N\'";
+	    String canaima = canaimaY.isSelected() ?  "\'Y\'" : "\'N\'";
+	    String estatura = ((Double)this.estatura.getValue()).toString();
+	    String peso = ((Double)this.peso.getValue()).toString();
+	    String talla_camisa = tallaCamisa.getValue().toString();
+	    String talla_pantalon = tallaPantalon.getValue().toString();
+	    String talla_zapato = tallaZapato.getValue().toString();
+	    String pais_nac = getStringFormat(this.pais_nac.getText());
+	    
+	    return "cedula="+cedula+",nac="+nac+",cod_escolar="+cod_escolar+",apellidos="+apellidos+",nombres="+nombres+
+	    		",grado="+grado+",seccion="+seccion+",sexo="+sexo+",fecha_nac="+fecha_nac+",lugar_nac="+lugar_nac+
+	    		",estado_nac="+estado_nac+",ef="+ef+",cedula_rep="+cedula_rep+",apellido_rep="+
+	    		apellido_rep+",nombre_rep="+nombre_rep+",parentezco="+parentezco+",direccion="+direccion+
+	    		",tlfn="+tlfn+",celular="+celular+",email="+email+",edo_civil="+edo_civil+",tipo_Vivienda="+tipo_vivienda+",ubicacion="+ubicacion+
+	    		",condicion_vivienda="+condicion_Vivienda+",profesion="+profesion+",lugar_trabajo="+lugar_trabajo+
+	    		",ingreso="+ingreso+",celular="+celular_est+",tlfn="+tlfn_est+",correo_est="+corre_est+",zurdo="+zurdo+
+	    		",beca="+beca+",canaima="+canaima+",estatura="+estatura+",peso="+peso+",talla_camisa="+talla_camisa+
+	    		",talla_pantalon="+talla_pantalon+",talla_zapato="+talla_zapato+",pais_nac="+pais_nac;
 	}
 	
 	static public String getStringFormat(String str)
@@ -517,7 +623,141 @@ public class Register extends JFrame {
 		peso.setValue(new Double(50.0));
 	}
 	
+	public void loadData(Object [] dat, Object [] est)
+	{
+		OldCi = Integer.parseInt((String)est[0]);
+		cedula.setText((String)dat[0]);
+		nombres.setText((String)dat[1]);
+		apellidos.setText((String)dat[2]);
+		try {
+			fecha_nac.getModel().setValue((Date)(new SimpleDateFormat("YYYY-MM-dd")).parseObject((String)dat[3]));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		edo_civil.setSelectedItem(dat[4]);
+		parentezco.setText((String)dat[5]);
+		nacionalidad.setText((String)dat[6]);
+		pais_nac.setText((String)dat[7]);
+		estado_nac.setText((String)dat[8]);
+		if(((String)dat[9]).equals("F"))
+			f.setSelected(true);
+		else
+			m.setSelected(true);
+		dir.setText((String)dat[10]);
+		tipoVivienda.setText((String)dat[11]);
+		ubicacion.setText((String)dat[12]);
+		condicion_vivienda.setText((String)dat[13]);
+		codCelular.setSelectedItem(((String)dat[14]).substring(0, 3));
+		celular.setText(((String)dat[14]).substring(5, 11));
+		codTelfn.setSelectedItem(((String)dat[15]).substring(0, 3));
+		telefono.setText(((String)dat[15]).substring(5));
+		correo.setText((String)dat[16]);
+		profesion.setText((String)dat[17]);
+		lugar_trabajo.setText((String)dat[18]);
+		ingreso.setText((String)dat[19]);
+		
+		///////
+		
+		ciEstu.setText((String)est[0]);
+		nivel.setSelectedItem((String)est[1]);
+		seccion.setText((String)est[2]);
+		nombreEst.setText((String)est[3]);
+		apellidoEst.setText((String)est[4]);
+		codCelularEst.setSelectedItem(((String)est[5]).substring(0, 3));
+		celularEst.setText(((String)est[5]).substring(5));
+		codTelfnEst.setSelectedItem(((String)est[6]).substring(0, 3));
+		telefonoEst.setText(((String)est[6]).substring(5));
+		correoEst.setText((String)est[7]);
+		if(((String)est[8]).equals("Y"))
+			zurdoY.setSelected(true);
+		else
+			zurdoN.setSelected(true);
+		
+		if(((String)est[9]).equals("Y"))
+			becaY.setSelected(true);
+		else
+			becaN.setSelected(true);
+		becaN.setSelected(false);
+		
+		if(((String)est[10]).equals("Y"))
+			canaimaY.setSelected(true);
+		else
+			canaimaN.setSelected(true);
+		
+		estatura.setValue(Double.parseDouble((String)est[11]));
+		peso.setValue(Double.parseDouble(((String)est[12])));
+		tallaCamisa.setValue(Integer.parseInt((String)est[13]));
+		tallaPantalon.setValue(Integer.parseInt((String)est[14]));
+		tallaZapato.setValue(Integer.parseInt((String)est[15]));
+	}
 	
+	
+	static public Object[][] getAsObject(Integer nr)
+	{
+		
+		try {
+			Statement st = Util.getConection().createStatement();
+			String query = "SELECT * FROM sae_reg  WHERE cedula="+nr.toString()+";";
+			System.out.println(query);
+			ResultSet rs = st.executeQuery(query);
+			if(rs.next())
+			{
+				String cedula = rs.getString("cedula_rep");
+				String nombres = rs.getString("nombre_rep");
+				String apellidos = rs.getString("apellido_rep");
+				String fecha_nac = rs.getString("fecha_nac");
+				String edo_civil = rs.getString("edo_civil");
+				String parentezco = rs.getString("parentezco");
+				String nacionalidad = rs.getString("nac");
+				String pais_nac = rs.getString("pais_nac");
+				String estado_nac = rs.getString("estado_nac");
+				String sexo = rs.getString("sexo");
+				String dir = rs.getString("direccion");
+				String tipoVivienda = rs.getString("tipo_vivienda");
+				String ubicacion = rs.getString("ubicacion");
+				String condicion_vivienda = rs.getString("condicion_Vivienda");
+				String celular = rs.getString("celular");
+				String telefono = rs.getString("tlfn");
+				String correo = rs.getString("email");
+				String profesion = rs.getString("profesion");
+				String lugar_trabajo = rs.getString("lugar_trabajo");
+				String ingreso = rs.getString("ingreso");
+				
+				Object [] rep = {cedula,nombres,apellidos,fecha_nac,edo_civil,parentezco,nacionalidad,
+							pais_nac,estado_nac,sexo,dir,tipoVivienda,ubicacion,condicion_vivienda,
+							celular,telefono,correo,profesion,lugar_trabajo,ingreso};
+				
+				String ciEstu = rs.getString("cedula");
+				String nivel = rs.getString("grado");
+				String seccion = rs.getString("seccion");
+				String nombreEst = rs.getString("nombres");
+				String apellidoEst = rs.getString("apellidos");
+				String celularEst = rs.getString("celular_est");
+				String tlfnEst = rs.getString("tlfn_est");
+				String correoEst = rs.getString("correo_est");
+				String zurdo = rs.getString("zurdo");
+				String beca = rs.getString("beca");
+				String canaima = rs.getString("canaima");
+				String estatura = rs.getString("estatura");
+				String peso = rs.getString("peso");
+				String tallaCamisa = rs.getString("talla_camisa");
+				String tallaPantalon = rs.getString("talla_pantalon");
+				String tallaZapato = rs.getString("talla_zapato");
+				
+				Object [] est = {ciEstu,nivel,seccion,nombreEst,apellidoEst,celularEst,tlfnEst,correoEst,zurdo,
+						beca,canaima,estatura,peso,tallaCamisa,tallaPantalon,tallaZapato};
+				
+				Object [][] ret = {rep,est};
+				return ret;
+				
+			}
+			Util.getConection().commit();
+			
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		return null;
+	}
 	
 	public void generateXLXS()
 	{

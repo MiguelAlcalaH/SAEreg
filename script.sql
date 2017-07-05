@@ -1,6 +1,6 @@
 CREATE TABLE sae_reg (
     cedula INT(10) PRIMARY KEY NOT NULL,
-    nac CHAR,
+    nac VARCHAR(20),
     cod_escolar VARCHAR(10),
     apellidos VARCHAR(20),
     nombres VARCHAR(20),
@@ -11,14 +11,34 @@ CREATE TABLE sae_reg (
     lugar_nac VARCHAR(10),
     estado_nac VARCHAR(10),
     ef VARCHAR(2),
-    cedula_rep INT(10),
+    cedula_rep INT(10) NOT NULL,
     apellido_rep VARCHAR(20),
     nombre_rep VARCHAR(20),
     parentezco VARCHAR(10),
     direccion VARCHAR(40),
     tlfn VARCHAR(12),
     celular VARCHAR(12),
-    email VARCHAR(20));
+    email VARCHAR(20),
+    edo_civil CHAR,
+    tipo_vivienda VARCHAR(20),
+    ubicacion VARCHAR(40),
+    condicion_vivienda VARCHAR(20),
+    profesion VARCHAR(20),
+    lugar_trabajo VARCHAR(20),
+    ingreso DOUBLE,
+    celular_est VARCHAR(11),
+    tlfn_est VARCHAR(11),
+    correo_est VARCHAR(20),
+    zurdo CHAR,
+    beca CHAR,
+    canaima CHAR,
+    estatura DOUBLE,
+    peso DOUBLE,
+    talla_camisa INTEGER,
+    talla_pantalon INTEGER,
+    talla_zapato INTEGER,
+    pais_nac VARCHAR(20));
     
 select * from sae_reg;
 delete from sae_reg;
+drop table sae_reg;
