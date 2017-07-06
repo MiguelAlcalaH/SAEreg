@@ -1,7 +1,9 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -124,6 +126,7 @@ public class Register extends JFrame {
 	JButton add;
 	JButton exit;
 	JButton clear;
+	JButton pdf;
 	JButton update;
 	
 	Integer OldCi = 0;
@@ -143,13 +146,14 @@ public class Register extends JFrame {
 		tabs.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 		add(tabs,BorderLayout.CENTER);
 		
-		JPanel buttonPanel = new JPanel(new GridBagLayout());
-		buttonPanel.add(clear,getConstraints(1, 0, 1, 1));
+		JPanel buttonPanel = new JPanel(new FlowLayout());
+		buttonPanel.add(pdf);
+		buttonPanel.add(clear);//,getConstraints(1, 0, 1, 1));
 		if(!upd)
-			buttonPanel.add(add,getConstraints(2, 0, 1, 1));
+			buttonPanel.add(add);//,getConstraints(2, 0, 1, 1));
 		else
-			buttonPanel.add(update,getConstraints(2, 0, 1, 1));
-		buttonPanel.add(exit,getConstraints(3, 0, 1, 1));
+			buttonPanel.add(update);//,getConstraints(2, 0, 1, 1));
+		buttonPanel.add(exit);//,getConstraints(3, 0, 1, 1));
 		
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
 		add(buttonPanel,BorderLayout.SOUTH);
@@ -396,6 +400,7 @@ public class Register extends JFrame {
 		exit = new JButton("Salir",new ImageIcon("Resources/dialog-no.png"));
 		clear = new JButton("Borrar", new ImageIcon("Resources/clear.png"));
 		update = new JButton("Actualizar", new ImageIcon("Resources/dialog-ok.png"));
+		pdf = new JButton("Generar Pdf",new ImageIcon("Resources/pdf.png"));
 		
 		exit.addActionListener(new ActionListener() {
 			
@@ -425,6 +430,11 @@ public class Register extends JFrame {
 					Util.getConection().commit();
 					
 				} catch (SQLException e1) {
+					if(e1.getErrorCode() == 19)
+					{
+						JOptionPane.showMessageDialog(null, "Esta cedula ya existe \n Si desea cambiar el registro vaya a actualizar", "Error", JOptionPane.INFORMATION_MESSAGE);
+						return;
+					}
 					e1.printStackTrace();
 				}
 				
@@ -446,13 +456,29 @@ public class Register extends JFrame {
 					Util.getConection().commit();
 					
 				} catch (SQLException e1) {
-					e1.printStackTrace();
+					System.out.println(e1.getErrorCode());
+					//e1.printStackTrace();
+					//System.out.println(e1.getErrorCode());
 				}
 				
 				JOptionPane.showMessageDialog(null, "Registro actualizado", "Actualizar registro", JOptionPane.INFORMATION_MESSAGE);
 				clearAllData();
 				dispose();
 			}
+		});
+		
+		pdf.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				Object [][] obj = getCurrentAsObject();
+				String ci = (String)obj[1][0];
+				String result = ci.equals("") ? "default.pdf" : ci+".pdf";
+				Util.generatePdf(result, obj);
+				setCursor(Cursor.getDefaultCursor());
+				JOptionPane.showMessageDialog(null, "Pdf creado!!", "Pdf", JOptionPane.INFORMATION_MESSAGE);
+			}			
 		});
 	}
 	
@@ -758,6 +784,58 @@ public class Register extends JFrame {
 		}
 		return null;
 	}
+	
+	 public Object[][] getCurrentAsObject()
+		{
+			String cedula = this.cedula.getText();
+			String nombres = this.nombres.getText();
+			String apellidos = this.apellidos.getText();
+			SimpleDateFormat fo = new SimpleDateFormat("yyyy-MM-dd");
+		    String fecha_nac = fo.format((Date)this.fecha_nac.getValue());
+			String edo_civil = (String)this.edo_civil.getSelectedItem();
+			String parentezco = this.parentezco.getText();
+			String nacionalidad = this.nacionalidad.getText();
+			String pais_nac = this.pais_nac.getText();
+			String estado_nac = this.estado_nac.getText();
+			String sexo = this.f.isSelected() ? "F" : "M";
+			String dir = this.dir.getText();
+			String tipoVivienda = this.tipoVivienda.getText();
+			String ubicacion = this.ubicacion.getText();
+			String condicion_vivienda = this.condicion_vivienda.getText();
+			String celular = (String)codCelular.getSelectedItem()+"-"+this.celular.getText();
+			String telefono = (String)codTelfn.getSelectedItem()+"-"+this.telefono.getText();
+			String correo = this.correo.getText();
+			String profesion = this.profesion.getText();
+			String lugar_trabajo = this.lugar_trabajo.getText();
+			String ingreso = this.ingreso.getText();
+			
+			Object [] rep = {cedula,nombres,apellidos,fecha_nac,edo_civil,parentezco,nacionalidad,
+						pais_nac,estado_nac,sexo,dir,tipoVivienda,ubicacion,condicion_vivienda,
+						celular,telefono,correo,profesion,lugar_trabajo,ingreso};
+			
+			String ciEstu = this.ciEstu.getText();
+			String nivel = (String)this.nivel.getSelectedItem();
+			String seccion = this.seccion.getText();
+			String nombreEst = this.nombreEst.getText();
+			String apellidoEst = this.apellidoEst.getText();
+			String celularEst = (String)codCelularEst.getSelectedItem()+"-"+this.celularEst.getText();
+			String tlfnEst = (String)codTelfnEst.getSelectedItem()+"-"+telefonoEst.getText();
+			String correoEst = this.correoEst.getText();
+			String zurdo =zurdoY.isSelected() ? "Y" : "N";
+			String beca = becaY.isSelected() ? "Y" : "N";
+			String canaima = canaimaY.isSelected() ? "Y" : "N";
+			String estatura = this.estatura.getValue().toString();
+			String peso = this.peso.getValue().toString();
+			String tallaCamisa = this.tallaCamisa.getValue().toString();
+			String tallaPantalon = this.tallaPantalon.getValue().toString();
+			String tallaZapato = this.tallaZapato.getValue().toString();
+			
+			Object [] est = {ciEstu,nivel,seccion,nombreEst,apellidoEst,celularEst,tlfnEst,correoEst,zurdo,
+					beca,canaima,estatura,peso,tallaCamisa,tallaPantalon,tallaZapato};
+			
+			Object [][] ret = {rep,est};
+			return ret;
+		}
 	
 	public void generateXLXS()
 	{

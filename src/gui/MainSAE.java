@@ -60,21 +60,24 @@ public class MainSAE extends JFrame{
 	{
 		super(title);
 		JPanel root = new JPanel(new GridBagLayout());
-		header = new JLabel("<html><b>Registro Escolar Para el SAE</b><html>");
-		header.setBackground(Color.white);
-		header.setOpaque(true);
-		header.setPreferredSize(new Dimension(100,50));
-		header.setBorder(BorderFactory.createEmptyBorder(20,20,20,0));
+		header = new JLabel();//"<html><b>Registro Escolar Para el SAE</b><html>");
+		ImageIcon ic = new ImageIcon("Resources/logoliceo32.jpg");
+		header.setIcon(ic);
+		//header.setBackground(Color.white);
+		//header.setOpaque(true);
+		//
+		//header.setPreferredSize(new Dimension(100,50));
+		header.setBorder(BorderFactory.createEmptyBorder(10,20,20,0));
 		root.add(header,Register.getConstraints(0, 0, 2, 1));
 		
 		create = new JButton("Nuevo Registro",new ImageIcon("Resources/add.png"));
-		create.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+		//create.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 		update = new JButton("Actualizar Registro",new ImageIcon("Resources/update.png"));
-		update.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+		//update.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 		delete = new JButton("Borrar Registro",new ImageIcon("Resources/delete.png"));
-		delete.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
+		//delete.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
 		generate = new JButton("Exportar a Excel",new ImageIcon("Resources/table.png"));
-		generate.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+		//generate.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 		
 		actions();
 		
@@ -154,13 +157,35 @@ public class MainSAE extends JFrame{
 				
 			}
 		});
+		
+		delete.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String nr = JOptionPane.showInputDialog("Ingrese Numero de cedula: ");
+				if(nr == null)
+					return;
+				try {
+					Statement st = Util.getConection().createStatement();
+					int c = st.executeUpdate("DELETE FROM sae_reg WHERE cedula="+nr+";");
+					if(c == 0)
+						JOptionPane.showMessageDialog(null, "Cedula no encontrada", "cedula", JOptionPane.ERROR_MESSAGE);
+					else
+						JOptionPane.showMessageDialog(null, "Registro eliminado", "Eliminado", JOptionPane.INFORMATION_MESSAGE);
+				} catch(SQLException ex)
+				{
+					ex.printStackTrace();
+				}
+				
+			}
+		});
 	
 	}
 
 	public void export()
 	{
 		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel 2007 (*.xls)","xls");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel 2003 (*.xls)","xls");
 		chooser.addChoosableFileFilter(filter);
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Excel 2010 (*.xlsx)","xlsx"));
 		int op = chooser.showSaveDialog(null);
@@ -169,7 +194,7 @@ public class MainSAE extends JFrame{
 			String result = chooser.getSelectedFile().getAbsolutePath();
 			String fil = chooser.getFileFilter().getDescription();
 			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			if(fil.equals("Excel 2007 (*.xls)"))
+			if(fil.equals("Excel 2003 (*.xls)"))
 			{
 				result = result + ".xls";
 				generateXLS(result);
