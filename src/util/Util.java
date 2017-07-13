@@ -25,13 +25,15 @@ public class Util {
 	private static final Connection connection;
 	
 	
+	///MODIFICADO TENIA UN ERROR
+	// Y TODOS LO VIERON Y NO SE DIERON CUENTA
 	private static final String PDF_HEADER = "Reciba un cordial saludo en nombre del personal que labora en el LB Carracciolo"
-											+" Parra y Olmedo.\nLa presente tiene como finalidad solicitar amablemente de su parte, el llenado"+
+											+" Parra y Olmedo.\nLa presente tiene como finalidad solicitar amablemente de su parte, el llenado "+
 											"del siguiente formato con información sobre usted como representante y su representado.\n"+
 											"Cabe destacar que la información requerida en el mismo, es para ser cargada en el Sistema de Gestión "+
 											"Escolar, el cual es una base de datos que posee el Ministerio de Educación a nivel nacional. Agradecemos "+
 											"de antemano su receptividad y celeridad en el proceso."; 
-	
+	//////////////////////////////////////////////////////////////////////
 	
 	static {
 		try {
@@ -59,6 +61,9 @@ public class Util {
 	}
 	
 	
+	
+	/// MODIFICADO
+	/// AGREGE LOS ICONOS EN LA CARPETA RESOURCE
 	public static void generatePdf(String result,Object[][] dat)
 	{
 		Document document = new Document(PageSize.A4);
@@ -82,11 +87,16 @@ public class Util {
 			cb.endText();
 			cb.restoreState();
 			
-			Image logome = Image.getInstance("Resources/me.gif");
-			logome.setAbsolutePosition(10, PageSize.A4.getHeight()-logome.getHeight()-10);
+			Image logome = Image.getInstance("Resources/gobM.png");
+			logome.setAbsolutePosition(10, PageSize.A4.getHeight()-logome.getHeight()-15);
 			document.add(logome);
 			
-			Image logoCol = Image.getInstance("Resources/logoliceo.jpg");
+			Image Me = Image.getInstance("Resources/MeLog.png");
+			Me.setAbsolutePosition(10+logome.getWidth(), PageSize.A4.getHeight()-Me.getHeight()-15);
+			document.add(Me);
+			
+			
+			Image logoCol = Image.getInstance("Resources/logoliceonew.jpg");
 			logoCol.scaleAbsolute(84, 64);
 			logoCol.setAbsolutePosition(PageSize.A4.getWidth()-logoCol.getScaledWidth()-20,PageSize.A4.getHeight()- logoCol.getScaledHeight()-10);
 			document.add(logoCol);
@@ -133,21 +143,6 @@ public class Util {
 			p.add(getUnderLine((String)rep[5], 5, 100));
 			document.add(p);
 			
-			p = getParagraph("NACIONALIDAD: ");
-			p.add(getUnderLine((String)rep[6], 5, 50));
-			p.add("  PAIS DE NACIMIENTO");
-			p.add(getUnderLine((String)rep[7], 5, 50));
-			document.add(p);
-			
-			p = getParagraph("ESTADO DE NACIMIENTO: ");
-			p.add(getUnderLine((String)rep[8], 5, 50));
-			p.add("  GÉNERO: M");
-			String F = ((String)rep[9]).equals("F") ? "X" : " ";
-			String M = F.equals("X") ? " " : "X";
-			p.add(getUnderLine(M, 2, 4));
-			p.add(" F ");
-			p.add(getUnderLine(F, 2, 4));
-			document.add(p);
 			
 			p = getParagraph("DIRECCIÓN COMPLETA: ");
 			p.add(getUnderLine((String)rep[10], 2, 100));
@@ -210,6 +205,36 @@ public class Util {
 			p.add(getUnderLine((String)est[4], 5, 150));
 			document.add(p);
 			
+			/////MODIFICADO
+			
+			p = getParagraph("NACIONALIDAD: ");
+			p.add(getUnderLine((String)rep[6], 5, 50));
+			p.add("  PAIS DE NACIMIENTO");
+			p.add(getUnderLine((String)rep[7], 5, 50));
+			document.add(p);
+			
+			p = getParagraph("ESTADO DE NACIMIENTO: ");
+			p.add(getUnderLine((String)rep[8], 2, 30));
+			
+			////MODIFICADO
+			p.add("  MUNICIPIO DE NACIMIENTO: ");
+			p.add(getUnderLine((String)est[16], 2, 40));
+			document.add(p);
+			
+			
+			
+			p = getParagraph("GÉNERO: M");
+			String F = ((String)rep[9]).equals("F") ? "X" : " ";
+			String M = F.equals("X") ? " " : "X";
+			p.add(getUnderLine(M, 2, 4));
+			p.add(" F ");
+			p.add(getUnderLine(F, 2, 4));
+			p.add("      DEPORTE QUE PRACTICA: ");
+			p.add(getUnderLine((String)est[17], 5, 50));
+			document.add(p);
+			
+			/////////////////////////////////////
+			
 			p = getParagraph("TELEFONO CELULAR: ");
 			p.add(getUnderLine((String)est[5], 5, 50));
 			p.add("  TELEFONO DE CASA: ");
@@ -251,7 +276,7 @@ public class Util {
 			p.add(getUnderLine((String)est[13], 5, 50));
 			document.add(p);
 			
-			p = getParagraph(("   TALLA DE PANTALÓN DEL ESTUDIANTE:"));
+			p = getParagraph(("TALLA DE PANTALÓN DEL ESTUDIANTE:"));
 			p.add(getUnderLine((String)est[14], 5, 50));
 			document.add(p);
 			
@@ -259,9 +284,11 @@ public class Util {
 			p.add(getUnderLine((String)est[15], 5, 50));
 			document.add(p);
 			
+			
+			
 			p = new Paragraph();
 			Chunk glue = new Chunk(new VerticalPositionMark());
-			p.setSpacingBefore(80);
+			p.setSpacingBefore(70);
 			underline = new Chunk("FIRMA DEL REPRESENTANTE", FontFactory.getFont(FontFactory.TIMES, 10));
 			underline.setUnderline(1, 10);
 			p.add(underline);

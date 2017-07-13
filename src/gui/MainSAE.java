@@ -1,12 +1,12 @@
 package gui;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,7 +36,6 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.sun.glass.events.KeyEvent;
 
 import util.Util;
 
@@ -47,6 +46,7 @@ public class MainSAE extends JFrame{
 	JButton create;
 	JButton update;
 	JButton delete;
+	JButton show;
 	
 	JButton generate;
 	
@@ -78,13 +78,14 @@ public class MainSAE extends JFrame{
 		//delete.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
 		generate = new JButton("Exportar a Excel",new ImageIcon("Resources/table.png"));
 		//generate.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
-		
+		show = new JButton("Mostrar Registros");
 		actions();
 		
 		root.add(create,Register.getConstraints(0, 2, 1, 1));
 		root.add(update,Register.getConstraints(1, 2, 1, 1));
 		root.add(delete,Register.getConstraints(0, 3, 1, 1));
 		root.add(generate,Register.getConstraints(1, 3, 1, 1));
+		root.add(show,Register.getConstraints(0, 4, 1, 1));
 		
 		JButton exit = new JButton("Salir", new ImageIcon("Resources/close.png"));
 		exit.addActionListener(new ActionListener() {
@@ -179,6 +180,14 @@ public class MainSAE extends JFrame{
 				
 			}
 		});
+		
+		show.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ShowRegisters("Registros");
+			}
+		});
 	
 	}
 
@@ -211,6 +220,10 @@ public class MainSAE extends JFrame{
 	}
 	
 	
+	 
+	/// MODIFICADO
+	// EN DONDE CARRIZO VA LA COLUMMNA MUNICIPIO?
+	// SUPUSE QUE VA ANTES DE LOS DATOS DEL REPRESENTANTE, MODIFIQUELA SEGUN
 	public void generateXLXS(String result)
 	{
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -244,14 +257,19 @@ public class MainSAE extends JFrame{
 				row.createCell(9).setCellValue(rs.getString("lugar_nac"));
 				row.createCell(10).setCellValue(rs.getString("estado_nac"));
 				row.createCell(11).setCellValue(rs.getString("ef"));
-				row.createCell(12).setCellValue(rs.getInt("cedula_rep"));
-				row.createCell(13).setCellValue(rs.getString("apellido_rep"));
-				row.createCell(14).setCellValue(rs.getString("nombre_rep"));
-				row.createCell(15).setCellValue(rs.getString("parentezco"));
-				row.createCell(16).setCellValue(rs.getString("direccion"));
-				row.createCell(17).setCellValue(rs.getString("tlfn"));
-				row.createCell(18).setCellValue(rs.getString("celular"));
-				row.createCell(19).setCellValue(rs.getString("email"));
+				
+				// AGREGADO
+				row.createCell(12).setCellValue("PORDEFECTO"); // rs.getString("municipio") o algo asi
+				
+				// LOS INDICES SE CORRIERON EN UNA POSICION
+				row.createCell(13).setCellValue(rs.getInt("cedula_rep"));
+				row.createCell(14).setCellValue(rs.getString("apellido_rep"));
+				row.createCell(15).setCellValue(rs.getString("nombre_rep"));
+				row.createCell(16).setCellValue(rs.getString("parentezco"));
+				row.createCell(17).setCellValue(rs.getString("direccion"));
+				row.createCell(18).setCellValue(rs.getString("tlfn"));
+				row.createCell(19).setCellValue(rs.getString("celular"));
+				row.createCell(20).setCellValue(rs.getString("email"));
 				r++;
 			}
 		} catch (SQLException e1) {
@@ -273,6 +291,7 @@ public class MainSAE extends JFrame{
 	}
 	
 	
+	///MODIFICADO
 	public void generateXLS(String result)
 	{
 		HSSFWorkbook wb = new HSSFWorkbook();
@@ -307,14 +326,18 @@ public class MainSAE extends JFrame{
 				row.createCell(9).setCellValue(rs.getString("lugar_nac"));
 				row.createCell(10).setCellValue(rs.getString("estado_nac"));
 				row.createCell(11).setCellValue(rs.getString("ef"));
-				row.createCell(12).setCellValue(rs.getInt("cedula_rep"));
-				row.createCell(13).setCellValue(rs.getString("apellido_rep"));
-				row.createCell(14).setCellValue(rs.getString("nombre_rep"));
-				row.createCell(15).setCellValue(rs.getString("parentezco"));
-				row.createCell(16).setCellValue(rs.getString("direccion"));
-				row.createCell(17).setCellValue(rs.getString("tlfn"));
-				row.createCell(18).setCellValue(rs.getString("celular"));
-				row.createCell(19).setCellValue(rs.getString("email"));
+				// AGREGADO
+				row.createCell(12).setCellValue("PORDEFECTO"); // rs.getString("municipio") o algo asi
+				
+				// LOS INDICES SE CORRIERON EN UNA POSICION
+				row.createCell(13).setCellValue(rs.getInt("cedula_rep"));
+				row.createCell(14).setCellValue(rs.getString("apellido_rep"));
+				row.createCell(15).setCellValue(rs.getString("nombre_rep"));
+				row.createCell(16).setCellValue(rs.getString("parentezco"));
+				row.createCell(17).setCellValue(rs.getString("direccion"));
+				row.createCell(18).setCellValue(rs.getString("tlfn"));
+				row.createCell(19).setCellValue(rs.getString("celular"));
+				row.createCell(20).setCellValue(rs.getString("email"));
 				r++;
 			}
 		} catch (SQLException e1) {

@@ -41,6 +41,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.util.ZipSecureFile.ThresholdInputStream;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -112,6 +113,11 @@ public class Register extends JFrame {
 	JSpinner tallaCamisa;
 	JSpinner tallaPantalon;
 	JSpinner tallaZapato;
+	//////////
+	/////////ESTO LO AGREGE
+	String municipio = "algun municipio";
+	String deporte = "Algun deporte";
+	
 	
 	
 	String cods[] = {"0416","0414","0412","0426","0424","0274"};
@@ -718,6 +724,8 @@ public class Register extends JFrame {
 	}
 	
 	
+	
+	//MODIFICADO
 	static public Object[][] getAsObject(Integer nr)
 	{
 		
@@ -770,8 +778,15 @@ public class Register extends JFrame {
 				String tallaPantalon = rs.getString("talla_pantalon");
 				String tallaZapato = rs.getString("talla_zapato");
 				
+				//// AGREGADO NUEVO
+				String municipio = "Algun municipio"; // Aqui deberia sacarlo de la BD (rs.getString("municipio"));
+				String deporte = "Deporte "; // Aqui  rs.getString("deporte");
+				
 				Object [] est = {ciEstu,nivel,seccion,nombreEst,apellidoEst,celularEst,tlfnEst,correoEst,zurdo,
-						beca,canaima,estatura,peso,tallaCamisa,tallaPantalon,tallaZapato};
+						beca,canaima,estatura,peso,tallaCamisa,tallaPantalon,tallaZapato,
+						// AGREGADO
+						municipio, deporte
+						};
 				
 				Object [][] ret = {rep,est};
 				return ret;
@@ -785,6 +800,8 @@ public class Register extends JFrame {
 		return null;
 	}
 	
+	
+	///// MODIFICADO
 	 public Object[][] getCurrentAsObject()
 		{
 			String cedula = this.cedula.getText();
@@ -829,10 +846,16 @@ public class Register extends JFrame {
 			String tallaCamisa = this.tallaCamisa.getValue().toString();
 			String tallaPantalon = this.tallaPantalon.getValue().toString();
 			String tallaZapato = this.tallaZapato.getValue().toString();
+			//AGREGADO 
+			String municipio = this.municipio;
+			String deporte = this.deporte;
+			///////////
 			
 			Object [] est = {ciEstu,nivel,seccion,nombreEst,apellidoEst,celularEst,tlfnEst,correoEst,zurdo,
-					beca,canaima,estatura,peso,tallaCamisa,tallaPantalon,tallaZapato};
-			
+					beca,canaima,estatura,peso,tallaCamisa,tallaPantalon,tallaZapato,
+					//AGREGADO
+					municipio, deporte};
+					/////////
 			Object [][] ret = {rep,est};
 			return ret;
 		}
