@@ -132,15 +132,11 @@ public class Util {
 			p = getParagraph("APELLIDOS: ");
 			p.add(getUnderLine((String)rep[2], 5, 100));
 			document.add(p);
-			
-			p = getParagraph("FECHA DE NACIMIENTO: ");
-			p.add(getUnderLine((String)rep[3], 5, 50));
-			p.add("  ESTADO CIVIL: ");
-			p.add(getUnderLine(shortStateToFull((String)rep[4]), 5, 50));
-			document.add(p);
-			
-			p = getParagraph("AFINIDAD CON EL ESTUDIANTE: ");
-			p.add(getUnderLine((String)rep[5], 5, 100));
+
+			p = getParagraph("ESTADO CIVIL: ");
+			p.add(getUnderLine(shortStateToFull((String)rep[4]), 2, 20));
+			p.add("AFINIDAD CON EL ESTUDIANTE: ");
+			p.add(getUnderLine((String)rep[5], 1, 50));
 			document.add(p);
 			
 			
@@ -205,6 +201,10 @@ public class Util {
 			p.add(getUnderLine((String)est[4], 5, 150));
 			document.add(p);
 			
+			
+			p = getParagraph("FECHA DE NACIMIENTO: ");
+			p.add(getUnderLine((String)rep[3], 5, 50));
+			document.add(p);
 			/////MODIFICADO
 			
 			p = getParagraph("NACIONALIDAD: ");
@@ -288,7 +288,7 @@ public class Util {
 			
 			p = new Paragraph();
 			Chunk glue = new Chunk(new VerticalPositionMark());
-			p.setSpacingBefore(70);
+			p.setSpacingBefore(50);
 			underline = new Chunk("FIRMA DEL REPRESENTANTE", FontFactory.getFont(FontFactory.TIMES, 10));
 			underline.setUnderline(1, 10);
 			p.add(underline);
